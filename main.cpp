@@ -4,6 +4,13 @@
 using namespace std;
 const size_t SCREEN_WIDTH = 80;
 const size_t MAX_ASTERISK = SCREEN_WIDTH - 3 - 1;
+const auto IMAGE_WIDTH = 400;
+const auto IMAGE_HEIGHT = 300;
+const auto TEXT_LEFT = 20;
+const auto TEXT_BASELINE = 20;
+const auto TEXT_WIDTH = 50;
+const auto BIN_HEIGHT = 30;
+const auto BLOCK_WIDTH = 10;
 vector<double>input_numbers(size_t count){
     vector<double>dataS(count);
     cerr << "Enter all your numbers with \'_\' between:" << endl;
@@ -86,7 +93,35 @@ void show_histogram_text(const vector<int>& bins) {
         }
     }
 }
+void svg_begin(){
+    cout << "<?xml version='1.0' encoding='UTF-8' ?>\n" <<
+    "<svg " << "width='" <<IMAGE_WIDTH <<"' height='"<<
+    IMAGE_HEIGHT <<"' viewBox='0 0 "<<IMAGE_WIDTH <<' '<<
+    IMAGE_HEIGHT << "' xmlns='http://www.w3.org/2000/svg'>\n";
+}
+void svg_end(){
+    cout << "</svg>\n";
+}
+void svg_text(double left, double baseline, string text){
+    cout << "<text x='"<<left<<"' y='"<<baseline<<"'>"<<text<<"</text>";
+}
+void svg_rect(double x, double y, double width, double height, string _fill){
+    cout << "<rect x='"<<x<<"' y='"<< y<<"' width='"<<width<<"' height='"<<height<<"' fill='"<<_fill <<"' />";
+}
+void show_histogram_svg(const vector<int>&bins){
+    svg_begin();
+    double top =0;
+    int i=0;
+    vector<string>fill_color={"#17f3df","#5e2129","#102878"};
+    for(auto bin : bins){
+        const double bin_width = BLOCK_WIDTH * bin;
+        svg_text(TEXT_LEFT,top+TEXT_BASELINE,to_string(bin));
+        svg_rect(TEXT_WIDTH,top,bin_width,BIN_HEIGHT,fill_color[i++]);
+        top+=BIN_HEIGHT;
+    }
 
+    svg_end();
+}
 int main()
 {
     size_t number_quantity;
@@ -100,7 +135,7 @@ int main()
     cerr << "Enter quantity of bins = ";
     cin >> bins_quantity;
     const vector<int> bins = make_histogram(bins_quantity,data);
-    show_histogram_text(bins);
+    show_histogram_svg(bins);
 
 
 
